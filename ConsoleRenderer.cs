@@ -1,4 +1,4 @@
-﻿namespace console_draw;
+﻿namespace asciiquarium;
 
 using Microsoft.Win32.SafeHandles;
 
@@ -8,10 +8,17 @@ using System.Runtime.InteropServices;
 internal class ConsoleRenderer
 {
     SafeFileHandle h = CreateFile("CONOUT$", 0x40000000, 2, IntPtr.Zero, FileMode.Open, 0, IntPtr.Zero);
-    short areaLeft, areaTop, areaRight, areaBottom, areaWidth, areaHeight;
+    public short AreaLeft { get; private set; }
+    public short AreaTop { get; private set; }
+    public short AreaRight { get; private set; }
+    public short AreaBottom { get; private set; }
+    public short AreaWidth { get; private set; }
+    public short AreaHeight { get; private set; }
+
     int maxAreaWidth, maxAreaHeight;
     ConsoleBuffer? buffer;
     bool clearBeforeNextFrame = true;
+    public bool AutoResizeToWindow { get; set; } = false;
 
     public delegate void AfterUpdate();
 
@@ -21,21 +28,22 @@ internal class ConsoleRenderer
 
     public event Update? OnUpdate;
 
+    public void SetSize(int width, int height)
+    {
+        SetSize(Convert.ToInt16(width), Convert.ToInt16(height));
+    }
     public void SetSize(short width, short height)
     {
         maxAreaWidth = Console.WindowWidth;
         maxAreaHeight = Console.WindowHeight;
 
-        areaWidth = width;
-        areaHeight = height;
-        areaLeft = Convert.ToInt16((maxAreaWidth - width) / 2d);
-        areaTop = Convert.ToInt16((maxAreaHeight - height) / 2d);
-        areaRight = Convert.ToInt16(width + areaLeft);
-        areaBottom = Convert.ToInt16(height + areaTop);
-
+        AreaWidth = width;
+        AreaHeight = height;
+        AreaLeft = Convert.ToInt16((maxAreaWidth - width) / 2d);
+        AreaTop = Convert.ToInt16((maxAreaHeight - height) / 2d);
+        AreaRight = Convert.ToInt16(width + AreaLeft);
+        AreaBottom = Convert.ToInt16(height + AreaTop);
         buffer = new ConsoleBuffer(width, height);
-
-        // complete redraw
         Console.Clear();
     }
 
@@ -45,8 +53,9 @@ internal class ConsoleRenderer
         {
             throw new ArgumentException($"You need to call {nameof(ConsoleRenderer)}.{nameof(SetSize)}() before the first Update!");
         }
-        if (maxAreaHeight != Console.WindowHeight
-            || maxAreaWidth != Console.WindowWidth)
+
+        if (AutoResizeToWindow && (maxAreaHeight != Console.WindowHeight
+            || maxAreaWidth != Console.WindowWidth))
         {
             SetSize(Convert.ToInt16(Console.WindowWidth), Convert.ToInt16(Console.WindowHeight));
         }
@@ -94,13 +103,13 @@ internal class ConsoleRenderer
 
         SmallRect rect = new SmallRect()
         {
-            Left = areaLeft,
-            Top = areaTop,
-            Right = areaRight,
-            Bottom = areaBottom
+            Left = AreaLeft,
+            Top = AreaTop,
+            Right = AreaRight,
+            Bottom = AreaBottom
         };
         bool b = WriteConsoleOutputW(h, buffer.Get(),
-                      new Coord() { X = areaWidth, Y = areaHeight },
+                      new Coord() { X = AreaWidth, Y = AreaHeight },
                       new Coord() { X = 0, Y = 0 },
                       ref rect);
     }

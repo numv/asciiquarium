@@ -1,4 +1,4 @@
-﻿namespace console_draw;
+﻿namespace asciiquarium;
 
 using System.Runtime.InteropServices;
 

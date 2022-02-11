@@ -1,4 +1,4 @@
-﻿namespace console_draw;
+﻿namespace asciiquarium;
 
 internal class FramerateCounter
 {

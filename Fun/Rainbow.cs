@@ -1,10 +1,27 @@
-﻿namespace console_draw.Fun;
+﻿namespace asciiquarium.Fun;
 
 using System;
 
 internal class Rainbow
 {
-    Random random = new Random();
+    static Random random = new Random();
+    static ConsoleColor[]? _consoleColors;
+    static ConsoleColor[] consoleColors
+    {
+        get
+        {
+            if (_consoleColors is null)
+            {
+                _consoleColors = Enum.GetValues<ConsoleColor>()
+                  .Where(n =>
+                      n != ConsoleColor.Black
+                      && n != ConsoleColor.Gray
+                      && n != ConsoleColor.DarkGray
+                      ).ToArray();
+            }
+            return _consoleColors;
+        }
+    }
     int lastTick = 0;
 
     public Rainbow(ConsoleRenderer renderer)
@@ -15,8 +32,8 @@ internal class Rainbow
     private void Renderer_OnUpdate(ref ConsoleBuffer buffer, out bool clearBeforeNextFrame)
     {
         clearBeforeNextFrame = false;
-        if (System.Environment.TickCount - lastTick < 1000)
-            return;
+        /* if (System.Environment.TickCount - lastTick < 1000) */
+        /*     return; */
 
         lastTick = System.Environment.TickCount;
 
@@ -29,11 +46,15 @@ internal class Rainbow
             //if (change == 0)
             //    continue;
 
-            var consoleColors = Enum.GetValues(typeof(ConsoleColor));
-            var colorFg = consoleColors.GetValue(random.Next(consoleColors.Length));
-            var colorBg = consoleColors.GetValue(random.Next(consoleColors.Length));
+            var colorFg = GetRandomColor();
+            var colorBg = GetRandomColor();
             if (colorFg is ConsoleColor fg && colorBg is ConsoleColor bg)
-                buffer.Set(x, new CharInfo((byte)'=', fg, bg));
+                buffer.Set(x, new CharInfo('▚', fg, bg));
         }
+    }
+    public static ConsoleColor GetRandomColor()
+    {
+        var r = random.Next(consoleColors.Length);
+        return consoleColors[r];
     }
 }

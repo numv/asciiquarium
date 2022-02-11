@@ -1,13 +1,17 @@
-﻿namespace console_draw;
+﻿namespace asciiquarium;
 
 internal class ConsoleBuffer
 {
     CharInfo[] buffer;
-    CharInfo fillChar = new CharInfo((byte)' ', ConsoleColor.Black);
+    CharInfo fillChar = new CharInfo(' ', ConsoleColor.Black);
     bool isEmpty = false;
+    int cols, rows;
+
 
     public ConsoleBuffer(int cols, int rows)
     {
+        this.cols = cols;
+        this.rows = rows;
         buffer = new CharInfo[cols * rows];
         Clear();
     }
@@ -31,20 +35,29 @@ internal class ConsoleBuffer
 
     internal void Clear(int x, int y)
     {
-        Set(x * y, fillChar);
+        Set(x, y, fillChar);
     }
 
-    internal void Set(int x, int y, CharInfo charInfo)
+    internal void Set(int x, int y, CharInfo? charInfo)
     {
-        Set(x + (x * y - 1), charInfo);
+        if (charInfo == null)
+            return;
+        if (x < 0 || x >= cols
+            || y < 0 || y >= rows)
+            return;
+        Set(x + (cols * y), charInfo);
     }
 
-    internal void Set(int x, CharInfo charInfo)
+    internal void Set(int x, CharInfo? charInfo)
     {
         isEmpty = false;
+        if (charInfo is null)
+        {
+            charInfo = fillChar;
+        }
 
         if (buffer.Length > x)
-            buffer[x] = charInfo;
+            buffer[x] = charInfo.Value;
     }
 
     internal CharInfo[] Get() => buffer;
