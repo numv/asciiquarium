@@ -7,7 +7,6 @@ internal class ConsoleBuffer
     bool isEmpty = false;
     int cols, rows;
 
-
     public ConsoleBuffer(int cols, int rows)
     {
         this.cols = cols;
@@ -17,6 +16,7 @@ internal class ConsoleBuffer
     }
 
     public int Length => buffer.Length;
+    internal CharInfo[] Get() => buffer;
 
     internal void Clear(CharInfo? fillChar = null)
     {
@@ -60,5 +60,4 @@ internal class ConsoleBuffer
             buffer[x] = charInfo.Value;
     }
 
-    internal CharInfo[] Get() => buffer;
 }
