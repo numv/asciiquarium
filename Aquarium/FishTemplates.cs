@@ -65,15 +65,6 @@ internal sealed class FishFancyTemplate : IAquariumTemplate
 
 internal sealed class FishDoraSmolTemplate : IAquariumTemplate
 {
-
-    const string F = @"
-      /`·.¸
-     /¸...¸`:·
- ¸.·´  ¸   `·.¸.·´)
-: © ):´;      ¸  {
- `·.¸ `·  ¸.·´\`·¸)
-     `\\´´\¸.·´";
-
     public int Width => 16;
     public int Height => 5;
 
@@ -182,4 +173,3 @@ _         _.*""\
         return frame;
     }
 }
-
